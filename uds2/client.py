@@ -100,7 +100,7 @@ class Client(object):
         folder = json.loads(r.text)
         return folder
     
-    def get_files(self, gid=None):
+    def get_files(self, folder=None):
         """ Get all uds2 files in a uds2 directory.
         
         :param folder: (optional) defines whether or not uds2 should get
@@ -110,7 +110,7 @@ class Client(object):
         r = self.request('get', '{}/files'.format(BASE_URL),
             data={
                 'q': 'properties has {key="uds2" and value="true"} ',
-                'parents': [gid or 'uds2_root'],
+                'parents': [folder or 'uds2_root'],
                 'pageSize': 1000})
         
         data = r.text
@@ -131,7 +131,7 @@ class Client(object):
         
         return files
     
-    def get_files_large(self, folder=None):
+    def get_large_files(self, folder=None):
         """ Get all uds2 files in a large folder.
 
         This method serves the same function as `get_files`,
@@ -146,5 +146,18 @@ class Client(object):
         dump = []
         while True:
             r = self.request('get', '{}/files'.format(BASE_URL),
-                data={''})
+                data={
+                    'parents': [folder or 'uds2_root'],
+                    'pageSize': 1000,
+                    'pageToken': token,
+                    'fields': 'nextPageToken, files(id, name, properties)'})
+            
+            data = json.loads(r)
+            
+            token = data['nextPageToken']
+
+            page = data.get('files')
+            dump.append(page)
+
+        return dump            
 
