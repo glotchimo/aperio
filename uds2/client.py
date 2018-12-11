@@ -75,7 +75,7 @@ class Client(object):
                 'name': 'uds2_root',
                 'mimeType': 'application/vnd.google-apps.folder',
                 'properties': {
-                    ''},
+                    'uds2_root': True},
                 'parents': []})
         
         root = json.loads(r.text)
@@ -101,11 +101,11 @@ class Client(object):
         return folder
     
     def get_files(self, gid=None):
-        """ Get all UDS2 files in a uds2 directory.
+        """ Get all uds2 files in a uds2 directory.
         
-        :param gid: (optional) defines whether or not uds2 should get
+        :param folder: (optional) defines whether or not uds2 should get
         files from within a specified folder. The value supplied
-        here must be a valid GID. Default folder is 'uds2_root'.
+        here must be a valid folder. Default folder is 'uds2_root'.
         """
         r = self.request('get', '{}/files'.format(BASE_URL),
             data={
@@ -130,4 +130,21 @@ class Client(object):
                 data=None))
         
         return files
+    
+    def get_files_large(self, folder=None):
+        """ Get all uds2 files in a large folder.
+
+        This method serves the same function as `get_files`,
+        but should be used for dump folders that contain over
+        1000 files.
+
+        :param folder: (optional) defines whether or not uds2 should get
+        files from within a specified folder. The value supplied
+        here must be a valid folder ID. Default folder is 'uds2_root'.
+        """
+        token = None
+        dump = []
+        while True:
+            r = self.request('get', '{}/files'.format(BASE_URL),
+                data={''})
 
