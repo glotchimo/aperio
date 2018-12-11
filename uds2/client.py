@@ -42,12 +42,19 @@ class Client(object):
             'Authorization': 'Bearer {}'.format(self.auth.access_token)})
 
     def request(self, method, url, **kwargs):
-        """ Make a request. """
-        response = getattr(self.session, method)(url, **kwargs)
-        if response.ok:
-            return response
+        """ Make a session request.
+
+        Proper keyword arguments would be consistent with the keyword
+        arguments used in the `Requests.request` base method.
+
+        :param method: a valid HTTP method.
+        :param url: a valid URL.
+        """
+        r = getattr(self.session, method)(url, **kwargs)
+        if r.ok:
+            return r
         else:
-            APIError(response)
+            APIError(r)
 
     def setup_root(self):
         """ Get/create the `uds2_root` Drive folder. """
@@ -70,6 +77,7 @@ class Client(object):
         return root
     
     def create_root(self):
+        """ Create a `uds2_root` directory. """
         r = self.request('post', '{}/files'.format(BASE_URL),
             data={
                 'name': 'uds2_root',
@@ -112,8 +120,8 @@ class Client(object):
                 'q': 'properties has {key="uds2" and value="true"} ',
                 'parents': [folder or 'uds2_root'],
                 'pageSize': 1000})
-        
         data = r.text
+        
         raw_files = data.get('files', [])
         files = []
         for rf in raw_files:
@@ -151,13 +159,41 @@ class Client(object):
                     'pageSize': 1000,
                     'pageToken': token,
                     'fields': 'nextPageToken, files(id, name, properties)'})
-            
-            data = json.loads(r)
+            data = json.loads(r.text)
             
             token = data['nextPageToken']
 
             page = data.get('files')
             dump.append(page)
 
-        return dump            
+            if not token:
+                break
+
+        return dump
+
+    def get_file(self, file):
+        """ Get a uds2 file.
+        
+        :param file: a valid file ID.
+        """
+        r = self.request('get', '{}/files/{}'.format(BASE_URL, file))
+        file = json.loads(r.text)
+        return file
+
+    def export_file(self, file):
+        """ Export a uds2 file to plaintext.
+
+        :param file: a valid file ID.        
+        """
+        r = self.request('get', '{}/files/{}/export?mimeType="text/plain"'.format(BASE_URL, file))
+        file = json.loads(r.text)
+        return file
+
+    def delete_file(self, file):
+        """ Delete a uds2 file.
+        
+        :param file: a valid file ID.
+        """
+        r = self.request('delete', '{}/files/{}'.format(BASE_URL, file))
+        return r
 
