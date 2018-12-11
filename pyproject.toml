@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "uds2"
+version = "0.1.0"
+description = "Unlimited Drive Storage 2"
+authors = ["elliott-maguire <me@elliott-m.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+requests = "^2.20"
+google-auth = "^1.6"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+pylint = "^2.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

@@ -1,0 +1,9 @@
+.vscode
+.circleci
+
+*.pyc
+__pycache__
+
+.env
+credentials.json
+
