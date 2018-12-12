@@ -1,5 +1,5 @@
 """
-uds2.files
+uds2.bases
 ~~~~~~~~~~
 
 This module implements the base uds2 file classes.

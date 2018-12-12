@@ -10,14 +10,14 @@ import json
 import requests
 
 from .exceptions import APIError
-from .files import UDS2File
+from .bases import UDS2File
 
 
 BASE_URL = 'https://www.googleapis.com/drive/v3'
 UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3'
 
 class Client(object):
-    """ Handle the Google API.
+    """ Implement Google API handling.
 
     :param auth: an OAuth2 credential object.
     :param session: (optional) a session capable of making persistent
@@ -90,30 +90,71 @@ class Client(object):
                     'metadata.json', metadata, 'application/json'),
                 'filedata': (
                     'filedata.json', '[]', 'application/json')})
-        
         root = json.loads(r.text)
+        
         return root
     
-    def create_dump_folder(self, dump):
+    def create_folder(self, name):
         """ Create a folder for a uds2 filedump.
 
         :param dump: a UDS2File object generated from a file.
         """
+        metadata = json.dumps({
+            'name': name,
+            'mimeType': 'application/vnd.google-apps.folder',
+            'parents': [],
+            'properties': {
+                'uds2_file': True}})
+
         r = self.request(
             'post',
-            '{}/files'.format(BASE_URL),
-            data={
-                'name': dump.name,
-                'mimeType': 'application/vnd.google-apps.folder',
-                'properties': {
-                    'uds': True,
-                    'size': dump.size,
-                    'size_numeric': dump.nsize,
-                    'size_encoded': dump.esize},
-                'parents': dump.parents})
-        
+            '{}/files?uploadType=multipart'.format(UPLOAD_URL),
+            files={
+                'metadata': (
+                    'metadata.json', metadata, 'application/json'),
+                'filedata': (
+                    'filedata.json', '[]', 'application/json')})
         folder = json.loads(r.text)
+        
         return folder
+
+    def upload_file(self, file, **kwargs):
+        """ Upload a uds2 file.
+        
+        :param file: a complete UDS2File object.
+        """
+        # make the UDS2File dataclass HTTPable
+        if type(file) is UDS2File:
+            filedata = file.asDict()
+        
+        # scrub kwargs for metadata
+        for kwarg in kwargs:
+            if kwarg not in ('id', 'name', 'parents'):
+                kwargs.pop(kwarg)
+        
+        r = self.request(
+            'post',
+            '{}/files?uploadType=multipart',
+            files={
+                'metadata': {
+                    'metadata.json', json.dumps(kwargs), 'application/json'},
+                'filedata': {
+                    'filedata.json', json.dumps(filedata), 'application/vnd.google-apps.file'}})
+        data = json.loads(r.text)
+
+        return data
+
+    def get_file(self, gid):
+        """ Get a uds2 file.
+        
+        :param fileid: a valid file ID.
+        """
+        r = self.request(
+            'get',
+            '{}/files/{}'.format(BASE_URL, gid))
+        file = json.loads(r.text)
+        
+        return file
     
     def get_files(self, folder=None):
         """ Get all uds2 files in a uds2 directory.
@@ -181,43 +222,6 @@ class Client(object):
 
         return dump
 
-    def upload_file(self, file, **kwargs):
-        """ Upload a uds2 file.
-        
-        :param file: a complete UDS2File object.
-        """
-        # make the UDS2File dataclass HTTPable
-        if type(file) is UDS2File:
-            filedata = file.asDict()
-        
-        # scrub kwargs for metadata
-        for kwarg in kwargs:
-            if kwarg not in ('id', 'name', 'parents'):
-                kwargs.pop(kwarg)
-        
-        r = self.request(
-            'post',
-            '{}/files?uploadType=multipart',
-            files={
-                'metadata': {
-                    'metadata.json', json.dumps(kwargs), 'application/json'},
-                'filedata': {
-                    'filedata.json', json.dumps(filedata), 'application/vnd.google-apps.file'}})
-        data = json.loads(r.text)
-
-        return data
-    
-    def get_file(self, gid):
-        """ Get a uds2 file.
-        
-        :param fileid: a valid file ID.
-        """
-        r = self.request(
-            'get',
-            '{}/files/{}'.format(BASE_URL, gid))
-        file = json.loads(r.text)
-        return file
-
     def export_file(self, gid):
         """ Export a uds2 file to plaintext.
 
@@ -227,6 +231,7 @@ class Client(object):
             'get',
             '{}/files/{}/export?mimeType="text/plain"'.format(BASE_URL, gid))
         file = json.loads(r.text)
+        
         return file
 
     def delete_file(self, gid):
@@ -235,5 +240,6 @@ class Client(object):
         :param fileid: a valid file ID.
         """
         r = self.request('delete', '{}/files/{}'.format(BASE_URL, gid))
+        
         return r
 

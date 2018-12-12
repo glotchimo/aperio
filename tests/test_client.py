@@ -14,7 +14,7 @@ from google.auth.transport.requests import AuthorizedSession
 
 def make_client():
     credentials = Credentials.from_service_account_file(
-        'uds2-225220-4f3e6cea55bb.json',
+        'credentials.json',
         scopes=['https://www.googleapis.com/auth/drive'])
     session = AuthorizedSession(credentials)
 
@@ -29,4 +29,9 @@ class TestClient:
         assert type(client) is Client
         assert type(client.auth) is Credentials
         assert type(client.session) is AuthorizedSession
+    
+    def test_create_folder(self):
+        client = make_client()
+
+        assert type(client.create_folder('Test')) is dict
 
