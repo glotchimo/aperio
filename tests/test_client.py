@@ -28,5 +28,5 @@ class TestClient:
 
         assert type(client) is Client
         assert type(client.auth) is Credentials
-        assert type(client.session) is Session
+        assert type(client.session) is AuthorizedSession
 

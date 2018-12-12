@@ -59,25 +59,18 @@ class Client(object):
 
     def setup_root(self):
         """ Get/create the `uds2_root` Drive folder. """
-        q = ''
+        q = 'properties has {key="uds2_root" and value="true"}'
         r = self.request(
             'get',
             '{}/files?q={}'.format(BASE_URL, q))
         data = json.loads(r.text)
 
-        folder = json.loads(r.text)
         folders = data['files'] if 'files' in data else None
-        if not folders:
-            raise APIError(r)
-
-        if len(folders) == 0:
-            root = self.create_root()
-        elif len(folders) == 1:
+        if folders:
             root = folders[0]
         else:
-            print('[WARN] - Multiple roots detected; returning first.')
-            root = folders[0]
-        
+            root = self.create_root()
+
         return root
     
     def create_root(self):
@@ -243,6 +236,4 @@ class Client(object):
         """
         r = self.request('delete', '{}/files/{}'.format(BASE_URL, gid))
         return r
-    
-
 
