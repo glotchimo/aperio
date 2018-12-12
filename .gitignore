@@ -1,9 +1,9 @@
 .vscode
-.circleci
+.pytest_cache
 
 *.pyc
 __pycache__
 
 .env
-credentials.json
+*.json
 
