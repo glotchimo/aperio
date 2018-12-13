@@ -13,13 +13,12 @@ from dataclasses import dataclass
 class UDS2File:
     gid: str
     name: str
-    mime: str
     parents: list
     shared: bool
     
-    size: str
-    nsize: float
-    esize: float
+    msize: str
+    nsize: int
+    esize: int
     
-    data: bytes
+    data: str
 
