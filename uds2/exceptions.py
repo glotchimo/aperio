@@ -1,8 +1,8 @@
 """
-uds2.exceptions
+udsi.exceptions
 ~~~~~~~~~~~~~~~
 
-Custom exceptions for uds2.
+Custom exceptions for UDSI.
 """
 
 
@@ -13,8 +13,7 @@ class APIError(Exception):
         self.status = response.status_code
         self.reason = response.reason
         self.text = response.text
-    
+
     def __str__(self):
-        return ('[ERROR {}] - {} \n {}'
-                .format(self.status, self.reason, self.text))
+        return f"[ERROR {self.status}] - {self.reason} \n {self.text}"
 

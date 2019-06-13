@@ -1,4 +1,4 @@
-from uds2 import __version__
+from udsi import __version__
 
 
 def test_version():

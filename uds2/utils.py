@@ -1,8 +1,8 @@
 """
-uds2.utils
+udsi.utils
 ~~~~~~~~~~
 
-This module implements the core utility methods used in uds2.
+This module implements the core utility methods used in UDSI.
 """
 
 import sys
@@ -14,13 +14,13 @@ from .bases import UDS2File
 def build_file(name, file, **kwargs):
     """ Builds a UDS2File object from a TextIOWrapper object.
 
-    Files sent to `build_file` must be opened in read-binary 
+    Files sent to `build_file` must be opened in read-binary
     in order to be encoded to base64.
-    
+
     :param file: a TextIOWrapper (`mode='rb'`).
     """
     raw = file.read()
-    enc = base64.b64encode(raw).decode()    
+    enc = base64.b64encode(raw).decode()
 
     nsize = sys.getsizeof(raw)
     esize = sys.getsizeof(enc)
@@ -44,6 +44,6 @@ def build_file(name, file, **kwargs):
         nsize=nsize,
         esize=esize,
         data=enc)
-    
+
     return file
 

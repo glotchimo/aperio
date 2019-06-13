@@ -1,8 +1,8 @@
 """
-uds2.api
-~~~~~~~~
+udsi.udsi
+~~~~~~~~~
 
-This module implements the uds2 interface class UDS2.
+This module implements the UDSI interface class.
 """
 
 import os
@@ -10,15 +10,13 @@ import os
 from .client import Client
 
 
-class UDS2:
-    """ Implement the UDS2 interface.
-    
+class UDSI:
+    """ Implement the UDSI interface.
+
     :param auth: an OAuth2 credential object.
     :param session: (optional) a session capable of making persistent
-    HTTP requests. Defaults to `requests.Session()`.
+                    HTTP requests. Defaults in client to
+                    `requests.Session()`.
     """
     def __init__(self, auth, session=None):
         self.client = Client(auth, session=session)
-    
-    
-

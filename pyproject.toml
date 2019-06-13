@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "uds2"
+name = "udsi"
 version = "0.1.0"
-description = "Unlimited Drive Storage 2"
+description = "Unlimited Drive Storage Improved"
 authors = ["elliott-maguire <me@elliott-m.com>"]
 
 [tool.poetry.dependencies]

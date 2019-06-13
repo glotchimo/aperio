@@ -5,7 +5,7 @@ tests.test_client
 This module implements the unit tests for the `client` module.
 """
 
-from uds2.client import Client
+from udsi.client import Client
 
 from requests import Session
 from google.oauth2.service_account import Credentials
@@ -29,7 +29,7 @@ class TestClient:
         assert type(client) is Client
         assert type(client.auth) is Credentials
         assert type(client.session) is AuthorizedSession
-    
+
     def test_create_folder(self):
         client = make_client()
 
