@@ -1,6 +1,8 @@
 .vscode
 .pytest_cache
 
+udsi.egg-info
+
 *.pyc
 __pycache__
 
