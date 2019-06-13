@@ -16,9 +16,8 @@ def make_client():
     credentials = Credentials.from_service_account_file(
         'credentials.json',
         scopes=['https://www.googleapis.com/auth/drive'])
-    session = AuthorizedSession(credentials)
 
-    client = Client(credentials, session=session)
+    client = Client(credentials)
     return client
 
 class TestClient:
@@ -27,7 +26,6 @@ class TestClient:
         client = make_client()
 
         assert type(client) is Client
-        assert type(client.auth) is Credentials
         assert type(client.session) is AuthorizedSession
 
     def test_create_folder(self):

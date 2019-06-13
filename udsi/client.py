@@ -12,6 +12,8 @@ import requests
 from .exceptions import APIError
 from .models import UDSIFile
 
+from google.auth.transport.requests import AuthorizedSession
+
 
 BASE_URL = 'https://www.googleapis.com/drive/v3'
 UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3'
@@ -20,37 +22,21 @@ UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3'
 class Client(object):
     """ Implement Google API handling.
 
-    :param auth: an OAuth2 credential object.
+    :param creds: a google-auth Credentials object.
     :param session: (optional) a session capable of making persistent
                     HTTP requests. Defaults to `requests.Session()`.
     """
 
-    def __init__(self, auth, session=None):
-        self.auth = auth
-        self.session = session or requests.Session()
-
+    def __init__(self, creds):
+        self.session = AuthorizedSession(creds)
         self.root = self._setup_root()
-
-        self._login()
-
-    def _login(self):
-        """ Authorize client. """
-        if not self.auth.access_token \
-        or (hasattr(self.auth, 'access_token_expired')
-        and self.auth.access_token_expired):
-
-            import httplib2; http = httplib2.Http()
-            self.auth.refresh(http)
-
-        self.session.headers.update({
-            'Authorization': 'Bearer {}'.format(self.auth.access_token)})
 
     def _setup_root(self):
         """ Get/create the `udsi_root` Drive folder. """
         q = 'properties has {key="udsi_root" and value="true"}'
         r = self.request(
             'get',
-            '{}/files?q={}'.format(BASE_URL, q))
+            f'{BASE_URL}/files?q={q}')
         data = json.loads(r.text)
 
         folders = data['files'] if 'files' in data else None
@@ -87,7 +73,7 @@ class Client(object):
 
         r = self.request(
             'post',
-            '{}/files?uploadType=multipart'.format(UPLOAD_URL),
+            f'{UPLOAD_URL}/files?uploadType=multipart',
             files={
                 'metadata': (
                     'metadata.json', metadata, 'application/json'),
@@ -98,7 +84,7 @@ class Client(object):
         return root
 
     def create_folder(self, name):
-        """ Create a folder for a udsi filedump.
+        """ Create a folder for a UDSI filedump.
 
         :param dump: a UDSIFile object generated from a file.
         """
@@ -111,7 +97,7 @@ class Client(object):
 
         r = self.request(
             'post',
-            '{}/files?uploadType=multipart'.format(UPLOAD_URL),
+            f'{UPLOAD_URL}/files?uploadType=multipart',
             files={
                 'metadata': (
                     'metadata.json', metadata, 'application/json'),
@@ -122,49 +108,51 @@ class Client(object):
         return folder
 
     def upload_file(self, file, **kwargs):
-        """ Upload a udsi file.
+        """ Upload a UDSI file.
 
         :param file: a complete UDSIFile object.
         """
-        # make the UDSIFile dataclass HTTPable
         if type(file) is UDSIFile:
             filedata = file.asDict()
 
-        # scrub kwargs for metadata
         for kwarg in kwargs:
             if kwarg not in ('id', 'name', 'parents'):
                 kwargs.pop(kwarg)
 
         r = self.request(
             'post',
-            '{}/files?uploadType=multipart',
+            f'{UPLOAD_URL}/files?uploadType=multipart',
             files={
                 'metadata': {
-                    'metadata.json', json.dumps(kwargs), 'application/json'},
+                    'metadata.json',
+                    json.dumps(kwargs), 'application/json'},
                 'filedata': {
-                    'filedata.json', json.dumps(filedata), 'application/vnd.google-apps.file'}})
+                    'filedata.json',
+                    json.dumps(filedata),
+                    'application/vnd.google-apps.file'}})
         data = json.loads(r.text)
 
         return data
 
     def get_file(self, gid):
-        """ Get a udsi file.
+        """ Get a UDSI file.
 
         :param fileid: a valid file ID.
         """
         r = self.request(
             'get',
-            '{}/files/{}'.format(BASE_URL, gid))
+            f'{BASE_URL}/files/{gid}')
         file = json.loads(r.text)
 
         return file
 
     def get_files(self, folder=None):
-        """ Get all udsi files in a udsi directory.
+        """ Get all UDSI files in a UDSI directory.
 
-        :param folder: (optional) defines whether or not udsi should get
-                       files from within a specified folder. The value supplied
-                       here must be a valid folder. Default folder is 'udsi_root'.
+        :param folder: (optional) defines whether or not UDSI should
+                       get files from within a specified folder.
+                       The value supplied here must be a valid folder.
+                       Default folder is 'udsi_root'.
         """
         r = self.request(
             'get',
@@ -193,22 +181,23 @@ class Client(object):
         return files
 
     def get_large_files(self, folder=None):
-        """ Get all udsi files in a large folder.
+        """ Get all UDSI files in a large folder.
 
         This method serves the same function as `get_files`,
         but should be used for dump folders that contain over
         1000 files.
 
-        :param folder: (optional) defines whether or not udsi should get
-                       files from within a specified folder. The value supplied
-                       here must be a valid folder ID. Default folder is 'udsi_root'.
+        :param folder: (optional) defines whether or not udsi
+                       should get files from within a specified folder.
+                       The value supplied here must be a valid
+                       folder ID. Default folder is 'udsi_root'.
         """
         token = None
         dump = []
         while True:
             r = self.request(
                 'get',
-                '{}/files'.format(BASE_URL),
+                f'{BASE_URL}/files',
                 data={
                     'parents': [folder or 'udsi_root'],
                     'pageSize': 1000,
@@ -226,23 +215,23 @@ class Client(object):
         return dump
 
     def export_file(self, gid):
-        """ Export a udsi file to plaintext.
+        """ Export a UDSI file to plaintext.
 
         :param fileid: a valid file ID.
         """
         r = self.request(
             'get',
-            '{}/files/{}/export?mimeType="text/plain"'.format(BASE_URL, gid))
+            f'{BASE_URL}/files/{gid}/export?mimeType="text/plain"')
         file = json.loads(r.text)
 
         return file
 
     def delete_file(self, gid):
-        """ Delete a udsi file.
+        """ Delete a UDSI file.
 
         :param fileid: a valid file ID.
         """
-        r = self.request('delete', '{}/files/{}'.format(BASE_URL, gid))
+        r = self.request('delete', f'{BASE_URL}/files/{gid}')
 
         return r
 

@@ -13,10 +13,7 @@ from .client import Client
 class UDSI:
     """ Implement the UDSI interface.
 
-    :param auth: an OAuth2 credential object.
-    :param session: (optional) a session capable of making persistent
-                    HTTP requests. Defaults in client to
-                    `requests.Session()`.
+    :param creds: a google-auth Credentials object.
     """
-    def __init__(self, auth, session=None):
-        self.client = Client(auth, session=session)
+    def __init__(self, creds):
+        self.client = Client(creds)
