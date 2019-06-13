@@ -7,8 +7,6 @@ This module implements the client for the Google API.
 
 import json
 
-import requests
-
 from .exceptions import APIError
 from .models import UDSIFile
 
