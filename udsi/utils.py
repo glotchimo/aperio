@@ -8,7 +8,7 @@ This module implements the core utility methods used in UDSI.
 import sys
 import base64
 
-from .bases import UDS2File
+from .models import UDS2File
 
 
 def build_file(name, file, **kwargs):

@@ -6,7 +6,7 @@ This module implements the unit tests for the `utils` module.
 """
 
 from udsi import utils
-from udsi.bases import UDS2File
+from udsi.bases import UDSIFile
 
 
 class TestUtils:
@@ -15,7 +15,7 @@ class TestUtils:
         original = open('test.txt', 'rb')
         parsed = utils.build_file('test', original)
 
-        assert type(parsed) is UDS2File
+        assert type(parsed) is UDSIFile
         assert parsed.name == 'test'
         assert parsed.msize == '484.0 B'
         assert parsed.nsize == 484
