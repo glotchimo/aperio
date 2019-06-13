@@ -8,11 +8,11 @@ This module implements the core utility methods used in UDSI.
 import sys
 import base64
 
-from .models import UDS2File
+from .models import UDSIFile
 
 
 def build_file(name, file, **kwargs):
-    """ Builds a UDS2File object from a TextIOWrapper object.
+    """ Builds a UDSIFile object from a TextIOWrapper object.
 
     Files sent to `build_file` must be opened in read-binary
     in order to be encoded to base64.
@@ -35,7 +35,7 @@ def build_file(name, file, **kwargs):
             break
     msize = '{} {}'.format(str(round(msize, 1)), unit)
 
-    file = UDS2File(
+    file = UDSIFile(
         gid='',
         name=name,
         parents=[],

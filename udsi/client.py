@@ -29,19 +29,37 @@ class Client(object):
         self.auth = auth
         self.session = session or requests.Session()
 
-        self.root = self.setup_root()
+        self.root = self._setup_root()
 
-    def login(self):
+        self._login()
+
+    def _login(self):
         """ Authorize client. """
         if not self.auth.access_token \
-            or (hasattr(self.auth, 'access_token_expired')
-                and self.auth.access_token_expired):
+        or (hasattr(self.auth, 'access_token_expired')
+        and self.auth.access_token_expired):
 
             import httplib2; http = httplib2.Http()
             self.auth.refresh(http)
 
         self.session.headers.update({
             'Authorization': 'Bearer {}'.format(self.auth.access_token)})
+
+    def _setup_root(self):
+        """ Get/create the `udsi_root` Drive folder. """
+        q = 'properties has {key="udsi_root" and value="true"}'
+        r = self.request(
+            'get',
+            '{}/files?q={}'.format(BASE_URL, q))
+        data = json.loads(r.text)
+
+        folders = data['files'] if 'files' in data else None
+        if folders:
+            root = folders[0]
+        else:
+            root = self.create_root()
+
+        return root
 
     def request(self, method, url, **kwargs):
         """ Make a session request.
@@ -57,22 +75,6 @@ class Client(object):
             return r
         else:
             raise APIError(r)
-
-    def setup_root(self):
-        """ Get/create the `udsi_root` Drive folder. """
-        q = 'properties has {key="udsi_root" and value="true"}'
-        r = self.request(
-            'get',
-            '{}/files?q={}'.format(BASE_URL, q))
-        data = json.loads(r.text)
-
-        folders = data['files'] if 'files' in data else None
-        if folders:
-            root = folders[0]
-        else:
-            root = self.create_root()
-
-        return root
 
     def create_root(self):
         """ Create a `udsi_root` directory. """
