@@ -14,12 +14,12 @@ Logic
 Basic Process
 -------------
 
-Going up:
+*Going up:*
 - File data is base64 encoded, resulting in a roughly 4:3 ratio
 - Encoded data is broken into arrays of 10 50k character blocks
 - Chunked data is formatted and submitted as a row into the dump sheet
 
-Coming down:
+*Coming down:*
 - Rows are pulled sequentially from the top
 - Pulled data is merged from block array into .part file
 - .part file is converted to final product according to metadata

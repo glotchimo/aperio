@@ -25,3 +25,6 @@ class UDSIFile:
     @property
     def asdict(self):
         return dataclasses.asdict(self)
+
+    def fromdict(self):
+        """  """
