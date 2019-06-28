@@ -8,6 +8,7 @@ authors = ["elliott-maguire <me@elliott-m.com>"]
 python = "^3.7"
 requests = "^2.20"
 google-auth = "^1.6"
+google-api-python-client = "^1.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"

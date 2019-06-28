@@ -36,14 +36,9 @@ def build_file(name, file, **kwargs):
     msize = '{} {}'.format(str(round(msize, 1)), unit)
 
     file = UDSIFile(
-        gid='',
-        name=name,
-        parents=[],
-        shared=True,
-        msize=msize,
-        nsize=nsize,
-        esize=esize,
+        gid='', name=name,
+        parents=[], shared=True,
+        msize=msize, nsize=nsize, esize=esize,
         data=enc)
 
     return file
-

@@ -6,10 +6,10 @@ This module implements UDSI model classes.
 """
 
 import base64
-from dataclasses import dataclass
+import dataclasses
 
 
-@dataclass
+@dataclasses.dataclass
 class UDSIFile:
     gid: str
     name: str
@@ -22,3 +22,6 @@ class UDSIFile:
 
     data: str
 
+    @property
+    def asdict(self):
+        return dataclasses.asdict(self)
