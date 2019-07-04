@@ -74,7 +74,7 @@ class Client(object):
                 addParents=parent.get('folderId')) \
             .execute()
 
-        def split(seq, n):
+        def split(seq: list, n: int):
             while seq:
                 yield seq[:n]
                 seq = seq[n:]

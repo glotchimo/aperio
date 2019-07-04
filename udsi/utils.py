@@ -19,7 +19,7 @@ def build_file(name, file, **kwargs):
 
     :param file: a TextIOWrapper (`mode='rb'`).
     """
-    raw = file.read()
+    raw = file.read(); file.close()
     enc = base64.b64encode(raw).decode()
 
     nsize = sys.getsizeof(raw)

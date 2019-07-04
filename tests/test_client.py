@@ -5,6 +5,8 @@ tests.test_client
 This module implements the unit tests for the `client` module.
 """
 
+import os
+
 from udsi.client import Client
 from udsi.utils import build_file
 
@@ -39,22 +41,34 @@ class TestClient:
     def test_upload_file(self):
         client = make_client()
 
-        raw = open('test.txt', mode='rb')
+        new = open('temp', mode='w+')
+        new.write('temp')
+        new.close()
+        raw = open('temp', 'rb')
+
         file = build_file('Test File', raw)
         r = client.upload_file(file)
 
         assert type(r) is dict
 
+        os.remove('temp')
         client.delete_file(r.get('spreadsheetId'))
 
     def test_get_file(self):
         client = make_client()
 
-        raw = open('test.txt', mode='rb')
+        new = open('temp', mode='w+')
+        new.write('temp')
+        new.close()
+        raw = open('temp', 'rb')
+
         file = build_file('Test File', raw)
         r = client.upload_file(file)
-        sheet_id = r.get('spreadsheetId')
+        id = r.get('spreadsheetId')
 
-        r = client.get_file(sheet_id)
+        r = client.get_file(id)
 
         assert type(r) is dict
+
+        os.remove('temp')
+        client.delete_file(r.get('spreadsheetId'))
