@@ -38,9 +38,8 @@ class Client(object):
                         the given file should be stored.
         """
         body = {
-            'name': name,
+            'name': f'udsi-{name}',
             'mimeType': 'application/vnd.google-apps.folder',
-            'addProperties': {'udsi': 'true'},
             'parents': parents or []}
         r = self.drive.files() \
             .create(
@@ -62,7 +61,7 @@ class Client(object):
 
         body = {
             'properties': {
-                'title': file.name}}
+                'title': f'udsi-{file.name}'}}
         sheet = self.sheets.spreadsheets() \
             .create(body=body) \
             .execute()
@@ -106,21 +105,6 @@ class Client(object):
 
         return sheet
 
-    def list_files(self, folder: str = None, **kwargs):
-        """ List all UDSI files in a UDSI directory.
-
-        :param folder: (optional) the ID of the folder from which
-                       files should be fetched.
-        """
-        r = self.drive.files() \
-            .list(
-                q='udsi in properties',
-                fields='files(id, name)') \
-            .execute()
-        files = r.get('files', [])
-
-        return files
-
     def get_file(self, id: str):
         """ Get a UDSI file.
 
@@ -133,6 +117,28 @@ class Client(object):
             .execute()
 
         return r
+
+    def list_files(self, folder: str = None):
+        """ List all UDSI files in a UDSI directory.
+
+        :param folder: (optional) the ID of the folder from which
+                       files should be fetched.
+        """
+        q = 'name contains "udsi-"'
+        if folder:
+            qa = f'parents in {repr(folder)}'
+            q = ' and '.join([q, qa])
+
+        r = self.drive.files() \
+            .list(
+                q=q,
+                pageSize=1000,
+                fields=(
+                    'nextPageToken, files(id, name, properties, mimeType)')) \
+            .execute()
+        files = r.get('files', [])
+
+        return files
 
     def delete_file(self, id: str):
         """ Delete a UDSI file.
