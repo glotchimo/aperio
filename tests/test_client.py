@@ -55,9 +55,11 @@ class TestClient:
     def test_create_folder(self):
         client = make_client()
 
-        r = client.create_folder('test folder')
+        r = client.create_folder('temp')
 
         assert type(r) is dict
+
+        client.delete_file(r.get('id'))
 
     def test_upload_file(self):
         client = make_client()

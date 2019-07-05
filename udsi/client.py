@@ -57,8 +57,6 @@ class Client(object):
 
         :param file: a complete UDSIFile object.
         """
-        parent = self.create_folder(file.name)
-
         body = {
             'properties': {
                 'title': f'udsi-{file.name}'}}
@@ -69,8 +67,7 @@ class Client(object):
 
         self.drive.files() \
             .update(
-                fileId=sheet_id,
-                addParents=parent.get('folderId')) \
+                fileId=sheet_id) \
             .execute()
 
         def split(seq: list, n: int):
@@ -148,5 +145,3 @@ class Client(object):
         r = self.drive.files() \
             .delete(fileId=id) \
             .execute()
-
-        return r
