@@ -10,7 +10,7 @@ import os
 from udsi.utils import build, rebuild
 from udsi.models import UDSIFile
 
-from tests.utils import make_client, make_file, cleanup
+from tests.utils import async_test, make_client, make_file, cleanup
 
 
 class TestUtils:
@@ -27,14 +27,15 @@ class TestUtils:
 
         os.remove('temp')
 
-    def test_rebuild(self):
+    @async_test
+    async def test_rebuild(self):
         client = make_client()
-        file, r = make_file(client)
-        r, d = client.get(r.get('spreadsheetId'))
+        file, r = await make_file(client)
+        r, d = await client.get(r.get('spreadsheetId'))
 
         built = rebuild(r, d)
 
         assert type(built) is UDSIFile
         assert built.name == 'udsi-temp'
 
-        cleanup(client, r.get('id'))
+        await cleanup(client, r.get('id'))
