@@ -30,28 +30,7 @@ class Client(object):
         self.drive = build('drive', 'v3', credentials=creds)
         self.sheets = build('sheets', 'v4', credentials=creds)
 
-    def create_folder(self, name: str, parents: list = None):
-        """ Create a folder for a UDSI filedump.
-
-        :param name: the name of the folder.
-        :param parents: (optional) a list of parent directories under which
-                        the given file should be stored.
-
-        :return r: a dict API response.
-        """
-        body = {
-            'name': f'udsi-{name}',
-            'mimeType': 'application/vnd.google-apps.folder',
-            'parents': parents or []}
-        r = self.drive.files() \
-            .create(
-                body=body,
-                fields='id') \
-            .execute()
-
-        return r
-
-    def upload_file(self, file: UDSIFile, **kwargs):
+    def upload(self, file: UDSIFile, **kwargs):
         """ Upload a UDSI file.
 
         A spreadsheet and folder are created, data is chunked,
@@ -106,7 +85,7 @@ class Client(object):
 
         return sheet
 
-    def get_file(self, id: str):
+    def get(self, id: str):
         """ Get a UDSI file.
 
         :param id: a valid file ID.
@@ -127,7 +106,7 @@ class Client(object):
 
         return r, d
 
-    def list_files(self, folder: str = None):
+    def list(self, folder: str = None):
         """ List all UDSI files in a UDSI directory.
 
         :param folder: (optional) the ID of the folder from which
@@ -151,7 +130,7 @@ class Client(object):
 
         return files
 
-    def delete_file(self, id: str):
+    def delete(self, id: str):
         """ Delete a UDSI file.
 
         :param id: a valid file ID.

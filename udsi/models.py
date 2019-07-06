@@ -14,9 +14,6 @@ class UDSIFile:
     id: str
     name: str
 
-    parents: list
-    shared: bool
-
     data: str
 
     @property
@@ -25,7 +22,6 @@ class UDSIFile:
 
     def export(self):
         """ Exports data to original file. """
-        dec = base64.b64decode(self.data).decode()
-
-        with open(self.name, 'w+') as f:
+        with open(self.name, 'wb+') as f:
+            dec = base64.b64decode(self.data)
             f.write(dec)

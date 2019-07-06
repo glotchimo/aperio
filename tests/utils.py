@@ -31,9 +31,8 @@ def make_file(client):
     new = open('temp', mode='w+')
     new.write('temp')
     new.close()
-    raw = open('temp', 'rb')
 
-    file = build('temp', raw)
+    file = build('temp')
     r = client.upload_file(file)
 
     return file, r

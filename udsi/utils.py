@@ -11,24 +11,19 @@ import base64
 from .models import UDSIFile
 
 
-def build(name: str, file, **kwargs):
-    """ Builds a UDSIFile object from a TextIOWrapper object.
+def build(name: str, **kwargs):
+    """ Builds a UDSIFile object from a file.
 
-    Files sent to `build` must be opened in read-binary
-    in order to be encoded to base64.
+    :param name: the name/path of an accessible file.
 
-    :param file: a TextIOWrapper (`mode='rb'`).
+    :return file: a new UDSIFile object.
     """
-    raw = file.read(); file.close()
-    enc = base64.b64encode(raw).decode()
-
-    nsize = sys.getsizeof(raw)
-    esize = sys.getsizeof(enc)
+    with open(name, 'rb') as f:
+        raw = f.read()
+        enc = base64.b64encode(raw).decode()
 
     file = UDSIFile(
         id='', name=name,
-        shared=kwargs.get('shared', False),
-        parents=kwargs.get('parents', []),
         data=enc)
 
     return file
@@ -42,6 +37,8 @@ def rebuild(r: dict, d: dict):
 
     :param r: a dict of file data.
     :param d: a dict of sheet data.
+
+    :return file: a new UDSIFile object.
     """
     arrays = d.get('values')
     data = ''
@@ -51,8 +48,6 @@ def rebuild(r: dict, d: dict):
 
     file = UDSIFile(
         id=r.get('spreadsheetId'), name=r.get('name'),
-        shared=r.get('shared', False),
-        parents=r.get('parents', []),
         data=data)
 
     return file

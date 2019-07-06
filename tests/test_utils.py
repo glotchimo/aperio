@@ -19,9 +19,8 @@ class TestUtils:
         new = open('temp', mode='w+')
         new.write('temp')
         new.close()
-        raw = open('temp', 'rb')
 
-        file = build('temp', raw)
+        file = build('temp')
 
         assert type(file) is UDSIFile
         assert file.name == 'temp'
@@ -31,7 +30,7 @@ class TestUtils:
     def test_rebuild(self):
         client = make_client()
         file, r = make_file(client)
-        r, d = client.get_file(r.get('spreadsheetId'))
+        r, d = client.get(r.get('spreadsheetId'))
 
         built = rebuild(r, d)
 
