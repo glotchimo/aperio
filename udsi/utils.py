@@ -37,7 +37,7 @@ def build(name: str, file, **kwargs):
 def rebuild(r: dict, d: dict):
     """ Rebuilds a UDSIFile object from an API response.
 
-    Files sent to `rebuild` must be dictionary responses
+    Data sent to `rebuild` must be dictionary responses
     from the `get_file` method.
 
     :param r: a dict of file data.
