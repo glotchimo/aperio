@@ -11,14 +11,11 @@ import dataclasses
 
 @dataclasses.dataclass
 class UDSIFile:
-    gid: str
+    id: str
     name: str
+
     parents: list
     shared: bool
-
-    msize: str
-    nsize: int
-    esize: int
 
     data: str
 
@@ -26,5 +23,5 @@ class UDSIFile:
     def asdict(self):
         return dataclasses.asdict(self)
 
-    def fromdict(self):
-        """  """
+    def export(self):
+        """ Exports data to original file. """

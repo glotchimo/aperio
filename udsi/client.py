@@ -36,6 +36,8 @@ class Client(object):
         :param name: the name of the folder.
         :param parents: (optional) a list of parent directories under which
                         the given file should be stored.
+
+        :return r: a dict API response.
         """
         body = {
             'name': f'udsi-{name}',
@@ -56,6 +58,8 @@ class Client(object):
         and pushed row-by-row to that sheet.
 
         :param file: a complete UDSIFile object.
+
+        :return sheet: a dict representing the new sheet.
         """
         body = {
             'properties': {
@@ -106,20 +110,30 @@ class Client(object):
         """ Get a UDSI file.
 
         :param id: a valid file ID.
+
+        :return r: a dict of file data.
+        :return d: a dict of sheet data.
         """
-        r = self.sheets.spreadsheets() \
+        r = self.drive.files() \
+            .get(
+                fileId=id,
+                fields='*') \
+            .execute()
+        d = self.sheets.spreadsheets().values() \
             .get(
                 spreadsheetId=id,
-                includeGridData=True) \
+                range='A1:Z1000') \
             .execute()
 
-        return r
+        return r, d
 
     def list_files(self, folder: str = None):
         """ List all UDSI files in a UDSI directory.
 
         :param folder: (optional) the ID of the folder from which
                        files should be fetched.
+
+        :return files: a dict containing metadata and a list of files.
         """
         q = 'name contains "udsi-"'
         if folder:

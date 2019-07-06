@@ -11,10 +11,10 @@ import base64
 from .models import UDSIFile
 
 
-def build_file(name, file, **kwargs):
+def build(name: str, file, **kwargs):
     """ Builds a UDSIFile object from a TextIOWrapper object.
 
-    Files sent to `build_file` must be opened in read-binary
+    Files sent to `build` must be opened in read-binary
     in order to be encoded to base64.
 
     :param file: a TextIOWrapper (`mode='rb'`).
@@ -25,20 +25,34 @@ def build_file(name, file, **kwargs):
     nsize = sys.getsizeof(raw)
     esize = sys.getsizeof(enc)
 
-    unit = 'B'
-    msize = float(nsize)
-    for s in ('KB', 'MB', 'GB', 'TB'):
-        if msize / 1024.0 >= 1:
-            msize /= 1024.0
-            unit = s
-        else:
-            break
-    msize = '{} {}'.format(str(round(msize, 1)), unit)
+    file = UDSIFile(
+        id='', name=name,
+        shared=kwargs.get('shared', False),
+        parents=kwargs.get('parents', []),
+        data=enc)
+
+    return file
+
+
+def rebuild(r: dict, d: dict):
+    """ Rebuilds a UDSIFile object from an API response.
+
+    Files sent to `rebuild` must be dictionary responses
+    from the `get_file` method.
+
+    :param r: a dict of file data.
+    :param d: a dict of sheet data.
+    """
+    arrays = d.get('values')
+    data = ''
+    for array in arrays:
+        block = ''.join(array)
+        data = ''.join([data, block])
 
     file = UDSIFile(
-        gid='', name=name,
-        parents=[], shared=True,
-        msize=msize, nsize=nsize, esize=esize,
-        data=enc)
+        id=r.get('spreadsheetId'), name=r.get('name'),
+        shared=r.get('shared', False),
+        parents=r.get('parents', []),
+        data=data)
 
     return file
