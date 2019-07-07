@@ -1,5 +1,7 @@
 # UDSI - Unlimited Drive Storage Improved
 
+[![Build Status](https://travis-ci.com/rlygud/udsi.svg?branch=master)](https://travis-ci.com/rlygud/udsi) <img alt="GitHub" src="https://img.shields.io/github/license/rlygud/udsi.svg">
+
 UDSI is a UDS client that is cleaner, faster, and more efficient than any existing client.
 
 ### Logic
