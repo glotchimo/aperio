@@ -5,19 +5,37 @@ tests.test_utils
 This module implements the unit tests for the `utils` module.
 """
 
-from udsi import utils
+import os
+
+from udsi.utils import build, rebuild
 from udsi.models import UDSIFile
+
+from tests.utils import async_test, make_client, make_file, cleanup
 
 
 class TestUtils:
     """ Test class for the `utils` module. """
-    def test_build_file(self):
-        original = open('test.txt', 'rb')
-        parsed = utils.build_file('test', original)
+    def test_build(self):
+        new = open('temp', mode='w+')
+        new.write('temp')
+        new.close()
 
-        assert type(parsed) is UDSIFile
-        assert parsed.name == 'test'
-        assert parsed.msize == '478.0 B'
-        assert parsed.nsize == 478
-        assert parsed.esize == 645
+        file = build('temp')
 
+        assert type(file) is UDSIFile
+        assert file.name == 'temp'
+
+        os.remove('temp')
+
+    @async_test
+    async def test_rebuild(self):
+        client = make_client()
+        file, r = await make_file(client)
+        r, d = await client.get(r.get('spreadsheetId'))
+
+        built = rebuild(r, d)
+
+        assert type(built) is UDSIFile
+        assert built.name == 'udsi-temp'
+
+        await cleanup(client, r.get('id'))
