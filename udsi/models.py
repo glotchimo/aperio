@@ -11,6 +11,7 @@ import dataclasses
 
 @dataclasses.dataclass
 class UDSIFile:
+    """ Implements the core UDSIFile object. """
     id: str
     name: str
 

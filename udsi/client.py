@@ -25,7 +25,6 @@ class Client(object):
     :param session: (optional) a session capable of making persistent
                     HTTP requests. Defaults to `requests.Session()`.
     """
-
     def __init__(self, creds: Credentials):
         self.drive = build('drive', 'v3', credentials=creds)
         self.sheets = build('sheets', 'v4', credentials=creds)
