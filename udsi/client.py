@@ -6,8 +6,7 @@ This module implements the client for the Google API.
 """
 
 import time
-import json
-import uuid
+import string
 from textwrap import wrap
 
 from .models import UDSIFile
@@ -22,15 +21,13 @@ class Client(object):
     """ Implement Google API handling.
 
     :param creds: a google-auth Credentials object.
-    :param session: (optional) a session capable of making persistent
-                    HTTP requests. Defaults to `requests.Session()`.
     """
     def __init__(self, creds: Credentials):
         self.drive = build('drive', 'v3', credentials=creds)
         self.sheets = build('sheets', 'v4', credentials=creds)
 
     async def upload(self, file: UDSIFile, **kwargs):
-        """ Upload a UDSI file.
+        """ Uploads a UDSI file.
 
         A spreadsheet and folder are created, data is chunked,
         and pushed row-by-row to that sheet.
@@ -58,11 +55,11 @@ class Client(object):
                 seq = seq[n:]
 
         blocks = wrap(file.data, 50000)
-        arrays = list(split(blocks, 10))
+        arrays = list(split(blocks, 26))
 
         for i, array in enumerate(arrays):
             row = i + 1
-            range = f'Sheet1!A{row}:J{row}'
+            range = f'Sheet1!A{row}:Z{row}'
             body = {'values': [array]}
 
             try:
@@ -85,28 +82,30 @@ class Client(object):
         return sheet
 
     async def get(self, id: str):
-        """ Get a UDSI file.
+        """ Gets a UDSI file.
 
         :param id: a valid file ID.
 
-        :return r: a dict of file data.
-        :return d: a dict of sheet data.
+        :return sheet: a dict of sheet metadata.
+        :return data: a dict of sheet contents.
         """
-        r = self.drive.files() \
-            .get(
-                fileId=id,
-                fields='*') \
-            .execute()
-        d = self.sheets.spreadsheets().values() \
-            .get(
-                spreadsheetId=id,
-                range='A1:Z1000') \
+        sheet = self.sheets.spreadsheets() \
+            .get(spreadsheetId=id) \
             .execute()
 
-        return r, d
+        nrows = sheet \
+            ['sheets'][0] \
+            ['properties']['gridProperties'] \
+            ['rowCount']
+
+        data = self.sheets.spreadsheets().values() \
+            .get(spreadsheetId=id, range=f'A1:Z{nrows}') \
+            .execute()
+
+        return sheet, data
 
     async def list(self, folder: str = None):
-        """ List all UDSI files in a UDSI directory.
+        """ Lists all UDSI files in a UDSI directory.
 
         :param folder: (optional) the ID of the folder from which
                        files should be fetched.
@@ -130,7 +129,7 @@ class Client(object):
         return files
 
     async def delete(self, id: str):
-        """ Delete a UDSI file.
+        """ Deletes a UDSI file.
 
         :param id: a valid file ID.
         """

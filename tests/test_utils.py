@@ -31,11 +31,11 @@ class TestUtils:
     async def test_rebuild(self):
         client = make_client()
         file, r = await make_file(client)
-        r, d = await client.get(r.get('spreadsheetId'))
+        sheet, data = await client.get(r.get('spreadsheetId'))
 
-        built = rebuild(r, d)
+        built = rebuild(sheet, data)
 
         assert type(built) is UDSIFile
-        assert built.name == 'udsi-temp'
+        assert built.name == 'temp'
 
-        await cleanup(client, r.get('id'))
+        await cleanup(client, r.get('spreadsheetId'))

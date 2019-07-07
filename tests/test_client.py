@@ -19,36 +19,36 @@ from google.oauth2.service_account import Credentials
 class TestClient:
     """ Test class for the `client` module. """
     @async_test
-    async def test_upload_file(self):
+    async def test_upload(self):
         client = make_client()
-        file, r = await make_file(client)
+        file, sheet = await make_file(client)
 
-        assert type(r) is dict
-        assert 'temp' in json.dumps(r)
+        assert type(sheet) is dict
+        assert 'temp' in json.dumps(sheet)
 
-        await cleanup(client, r.get('spreadsheetId'))
+        await cleanup(client, sheet.get('spreadsheetId'))
 
     @async_test
-    async def test_get_file(self):
+    async def test_get(self):
         client = make_client()
-        file, r = await make_file(client)
+        file, sheet = await make_file(client)
 
-        id = r.get('spreadsheetId')
-        r, d = await client.get(id)
+        id = sheet.get('spreadsheetId')
+        sheet, data = await client.get(id)
 
-        assert type(r) is dict
-        assert 'temp' in json.dumps(r)
+        assert type(sheet) is dict
+        assert 'temp' in json.dumps(sheet)
 
-        await cleanup(client, r.get('id'))
+        await cleanup(client, sheet.get('spreadsheetId'))
 
     @async_test
-    async def test_list_files(self):
+    async def test_list(self):
         client = make_client()
-        file, r = await make_file(client)
+        file, sheet = await make_file(client)
 
         files = await client.list()
 
         assert type(files) is list
         assert 'temp' in json.dumps(files)
 
-        await cleanup(client, r.get('spreadsheetId'))
+        await cleanup(client, sheet.get('spreadsheetId'))
