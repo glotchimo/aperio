@@ -26,7 +26,7 @@ class Client(object):
         self.drive = build('drive', 'v3', credentials=creds)
         self.sheets = build('sheets', 'v4', credentials=creds)
 
-    async def upload(self, file: UDSIFile, **kwargs):
+    async def upload(self, file: UDSIFile, **kwargs) -> dict:
         """ Uploads a UDSI file.
 
         A spreadsheet and folder are created, data is chunked,
@@ -81,7 +81,7 @@ class Client(object):
 
         return sheet
 
-    async def get(self, id: str):
+    async def get(self, id: str) -> (dict, dict):
         """ Gets a UDSI file.
 
         :param id: a valid file ID.
@@ -104,7 +104,7 @@ class Client(object):
 
         return sheet, data
 
-    async def list(self, folder: str = None):
+    async def list(self, folder: str = None) -> list:
         """ Lists all UDSI files in a UDSI directory.
 
         :param folder: (optional) the ID of the folder from which
