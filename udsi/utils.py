@@ -11,7 +11,7 @@ import base64
 from .models import UDSIFile
 
 
-def build(name: str, **kwargs):
+def build(name: str, **kwargs) -> UDSIFile:
     """ Builds a UDSIFile object from a file.
 
     :param name: the name/path of an accessible file.
@@ -29,7 +29,7 @@ def build(name: str, **kwargs):
     return file
 
 
-def rebuild(sheet: dict, data: dict):
+def rebuild(sheet: dict, data: dict) -> UDSIFile:
     """ Rebuilds a UDSIFile object from an API response.
 
     Data sent to `rebuild` must be dictionary responses
