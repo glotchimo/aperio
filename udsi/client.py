@@ -7,6 +7,7 @@ This module implements the client for the Google API.
 
 import time
 import string
+import asyncio
 from textwrap import wrap
 
 from .models import UDSIFile
@@ -25,6 +26,43 @@ class Client(object):
     def __init__(self, creds: Credentials):
         self.drive = build('drive', 'v3', credentials=creds)
         self.sheets = build('sheets', 'v4', credentials=creds)
+
+        self.root = self._setup_root()
+
+    def _setup_root(self):
+        """ Gets or creates the root UDSI folder. """
+        q = 'name = "udsi-root-folder"'
+        r = self.drive.files() \
+            .list(
+                q=q,
+                fields=('files(id, name)')) \
+            .execute()
+
+        files = r.get('files', [])
+        root = files[0] \
+            if files \
+            else self.create_folder('root')
+
+        return root
+
+    def create_folder(self, name: str, parents: list = None) -> dict:
+        """ Create a folder for a UDSI filedump.
+
+        :param name: the name of the folder.
+        :param parents: (optional) a list of parent directories under which
+                        the given file should be stored.
+        """
+        body = {
+            'name': f'udsi-{name}-folder',
+            'mimeType': 'application/vnd.google-apps.folder',
+            'parents': parents}
+        r = self.drive.files() \
+            .create(
+                body=body,
+                fields='id, name') \
+            .execute()
+
+        return r
 
     async def upload(self, file: UDSIFile, **kwargs) -> dict:
         """ Uploads a UDSI file.

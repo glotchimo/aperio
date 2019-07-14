@@ -7,6 +7,7 @@ This module implements the unit tests for the `client` module.
 
 import os
 import json
+import asyncio
 
 from udsi.client import Client
 from udsi.utils import build
@@ -18,6 +19,12 @@ from google.oauth2.service_account import Credentials
 
 class TestClient:
     """ Test class for the `client` module. """
+    @async_test
+    async def test_init(self):
+        client = make_client()
+
+        assert 'udsi-root-folder' in json.dumps(client.root)
+
     @async_test
     async def test_upload(self):
         client = make_client()
