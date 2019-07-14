@@ -18,7 +18,7 @@ class UDSIFile:
     data: str
 
     @property
-    def asdict(self):
+    def asdict(self) -> dict:
         return dataclasses.asdict(self)
 
     def export(self):

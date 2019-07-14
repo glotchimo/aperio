@@ -45,9 +45,9 @@ async def make_file(client):
     new.close()
 
     file = build('temp')
-    r = await client.upload(file)
+    sheet = await client.upload(file)
 
-    return file, r
+    return file, sheet
 
 
 async def cleanup(client, id):
