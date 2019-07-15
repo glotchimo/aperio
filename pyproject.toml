@@ -13,6 +13,7 @@ google-api-python-client = "^1.7"
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
 pylint = "^2.2"
+black = "^19.3b0"
 rope = "^0.14.0"
 
 [build-system]
