@@ -7,4 +7,5 @@ install:
   - poetry install
 
 script:
+  - black .
   - pytest
