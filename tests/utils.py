@@ -29,10 +29,12 @@ def async_test(f):
 def make_client():
     """ Instantiates an authenticated Client object. """
     credentials = Credentials.from_service_account_file(
-        'credentials.json',
+        "credentials.json",
         scopes=[
-            'https://www.googleapis.com/auth/drive',
-            'https://www.googleapis.com/auth/spreadsheets'])
+            "https://www.googleapis.com/auth/drive",
+            "https://www.googleapis.com/auth/spreadsheets",
+        ],
+    )
     client = Client(credentials)
 
     return client
@@ -40,11 +42,11 @@ def make_client():
 
 async def make_file(client):
     """ Creates and uploads a temporary test file. """
-    new = open('temp', mode='w+')
-    new.write('temp')
+    new = open("temp", mode="w+")
+    new.write("temp")
     new.close()
 
-    file = build('temp')
+    file = build("temp")
     sheet = await client.upload(file)
 
     return file, sheet
@@ -52,5 +54,5 @@ async def make_file(client):
 
 async def cleanup(client, id):
     """ Deletes temporary test files. """
-    os.remove('temp')
+    os.remove("temp")
     r = await client.delete(id)

@@ -18,13 +18,11 @@ def build(name: str, **kwargs) -> UDSIFile:
 
     :return file: a new UDSIFile object.
     """
-    with open(name, 'rb') as f:
+    with open(name, "rb") as f:
         raw = f.read()
         enc = base64.b64encode(raw).decode()
 
-    file = UDSIFile(
-        id='', name=name,
-        data=enc)
+    file = UDSIFile(id="", name=name, data=enc)
 
     return file
 
@@ -40,17 +38,16 @@ def rebuild(sheet: dict, data: dict) -> UDSIFile:
 
     :return file: a new UDSIFile object.
     """
-    properties = sheet.get('properties')
+    properties = sheet.get("properties")
 
-    arrays = data.get('values')
-    data = ''
+    arrays = data.get("values")
+    data = ""
     for array in arrays:
-        block = ''.join(array)
-        data = ''.join([data, block])
+        block = "".join(array)
+        data = "".join([data, block])
 
     file = UDSIFile(
-        id=sheet.get('spreadsheetId'),
-        name=properties.get('title')[5:],
-        data=data)
+        id=sheet.get("spreadsheetId"), name=properties.get("title")[5:], data=data
+    )
 
     return file

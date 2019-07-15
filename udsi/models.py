@@ -12,6 +12,7 @@ import dataclasses
 @dataclasses.dataclass
 class UDSIFile:
     """ Implements the core UDSIFile object. """
+
     id: str
     name: str
 
@@ -23,6 +24,6 @@ class UDSIFile:
 
     def export(self):
         """ Exports data to original file. """
-        with open(self.name, 'wb+') as f:
+        with open(self.name, "wb+") as f:
             dec = base64.b64decode(self.data)
             f.write(dec)

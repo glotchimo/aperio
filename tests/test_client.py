@@ -19,11 +19,12 @@ from google.oauth2.service_account import Credentials
 
 class TestClient:
     """ Test class for the `client` module. """
+
     @async_test
     async def test_init(self):
         client = make_client()
 
-        assert 'udsi-root-folder' in json.dumps(client.root)
+        assert "udsi-root-folder" in json.dumps(client.root)
 
     @async_test
     async def test_upload(self):
@@ -31,22 +32,22 @@ class TestClient:
         file, sheet = await make_file(client)
 
         assert type(sheet) is dict
-        assert 'temp' in json.dumps(sheet)
+        assert "temp" in json.dumps(sheet)
 
-        await cleanup(client, sheet.get('spreadsheetId'))
+        await cleanup(client, sheet.get("spreadsheetId"))
 
     @async_test
     async def test_get(self):
         client = make_client()
         file, sheet = await make_file(client)
 
-        id = sheet.get('spreadsheetId')
+        id = sheet.get("spreadsheetId")
         sheet, data = await client.get(id)
 
         assert type(sheet) is dict
-        assert 'temp' in json.dumps(sheet)
+        assert "temp" in json.dumps(sheet)
 
-        await cleanup(client, sheet.get('spreadsheetId'))
+        await cleanup(client, sheet.get("spreadsheetId"))
 
     @async_test
     async def test_list(self):
@@ -56,6 +57,6 @@ class TestClient:
         files = await client.list()
 
         assert type(files) is list
-        assert 'temp' in json.dumps(files)
+        assert "temp" in json.dumps(files)
 
-        await cleanup(client, sheet.get('spreadsheetId'))
+        await cleanup(client, sheet.get("spreadsheetId"))

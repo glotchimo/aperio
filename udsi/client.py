@@ -23,25 +23,20 @@ class Client(object):
 
     :param creds: a google-auth Credentials object.
     """
+
     def __init__(self, creds: Credentials):
-        self.drive = build('drive', 'v3', credentials=creds)
-        self.sheets = build('sheets', 'v4', credentials=creds)
+        self.drive = build("drive", "v3", credentials=creds)
+        self.sheets = build("sheets", "v4", credentials=creds)
 
         self.root = self._setup_root()
 
     def _setup_root(self):
         """ Gets or creates the root UDSI folder. """
         q = 'name = "udsi-root-folder"'
-        r = self.drive.files() \
-            .list(
-                q=q,
-                fields=('files(id, name)')) \
-            .execute()
+        r = self.drive.files().list(q=q, fields=("files(id, name)")).execute()
 
-        files = r.get('files', [])
-        root = files[0] \
-            if files \
-            else self.create_folder('root')
+        files = r.get("files", [])
+        root = files[0] if files else self.create_folder("root")
 
         return root
 
@@ -53,14 +48,11 @@ class Client(object):
                         the given file should be stored.
         """
         body = {
-            'name': f'udsi-{name}-folder',
-            'mimeType': 'application/vnd.google-apps.folder',
-            'parents': parents}
-        r = self.drive.files() \
-            .create(
-                body=body,
-                fields='id, name') \
-            .execute()
+            "name": f"udsi-{name}-folder",
+            "mimeType": "application/vnd.google-apps.folder",
+            "parents": parents,
+        }
+        r = self.drive.files().create(body=body, fields="id, name").execute()
 
         return r
 
@@ -74,18 +66,11 @@ class Client(object):
 
         :return sheet: a dict representing the new sheet.
         """
-        body = {
-            'properties': {
-                'title': f'udsi-{file.name}'}}
-        sheet = self.sheets.spreadsheets() \
-            .create(body=body) \
-            .execute()
-        sheet_id = sheet.get('spreadsheetId')
+        body = {"properties": {"title": f"udsi-{file.name}"}}
+        sheet = self.sheets.spreadsheets().create(body=body).execute()
+        sheet_id = sheet.get("spreadsheetId")
 
-        self.drive.files() \
-            .update(
-                fileId=sheet_id) \
-            .execute()
+        self.drive.files().update(fileId=sheet_id).execute()
 
         def split(seq: list, n: int):
             while seq:
@@ -97,25 +82,28 @@ class Client(object):
 
         for i, array in enumerate(arrays):
             row = i + 1
-            range = f'Sheet1!A{row}:Z{row}'
-            body = {'values': [array]}
+            range = f"Sheet1!A{row}:Z{row}"
+            body = {"values": [array]}
 
             try:
-                r = self.sheets.spreadsheets().values() \
+                r = (
+                    self.sheets.spreadsheets()
+                    .values()
                     .update(
                         spreadsheetId=sheet_id,
                         range=range,
-                        valueInputOption='USER_ENTERED',
-                        body=body) \
+                        valueInputOption="USER_ENTERED",
+                        body=body,
+                    )
                     .execute()
+                )
             except HttpError as e:
-                print('Failed to upload array, cooling and retrying...')
+                print("Failed to upload array, cooling and retrying...")
                 time.sleep(10)
-                i -= 1; continue
+                i -= 1
+                continue
 
-        sheet = self.sheets.spreadsheets() \
-            .get(spreadsheetId=sheet_id) \
-            .execute()
+        sheet = self.sheets.spreadsheets().get(spreadsheetId=sheet_id).execute()
 
         return sheet
 
@@ -127,18 +115,16 @@ class Client(object):
         :return sheet: a dict of sheet metadata.
         :return data: a dict of sheet contents.
         """
-        sheet = self.sheets.spreadsheets() \
-            .get(spreadsheetId=id) \
-            .execute()
+        sheet = self.sheets.spreadsheets().get(spreadsheetId=id).execute()
 
-        nrows = sheet \
-            ['sheets'][0] \
-            ['properties']['gridProperties'] \
-            ['rowCount']
+        nrows = sheet["sheets"][0]["properties"]["gridProperties"]["rowCount"]
 
-        data = self.sheets.spreadsheets().values() \
-            .get(spreadsheetId=id, range=f'A1:Z{nrows}') \
+        data = (
+            self.sheets.spreadsheets()
+            .values()
+            .get(spreadsheetId=id, range=f"A1:Z{nrows}")
             .execute()
+        )
 
         return sheet, data
 
@@ -152,17 +138,19 @@ class Client(object):
         """
         q = 'name contains "udsi-"'
         if folder:
-            qa = f'parents in {repr(folder)}'
-            q = ' and '.join([q, qa])
+            qa = f"parents in {repr(folder)}"
+            q = " and ".join([q, qa])
 
-        r = self.drive.files() \
+        r = (
+            self.drive.files()
             .list(
                 q=q,
                 pageSize=1000,
-                fields=(
-                    'nextPageToken, files(id, name, properties, mimeType)')) \
+                fields=("nextPageToken, files(id, name, properties, mimeType)"),
+            )
             .execute()
-        files = r.get('files', [])
+        )
+        files = r.get("files", [])
 
         return files
 
@@ -171,6 +159,4 @@ class Client(object):
 
         :param id: a valid file ID.
         """
-        r = self.drive.files() \
-            .delete(fileId=id) \
-            .execute()
+        r = self.drive.files().delete(fileId=id).execute()
