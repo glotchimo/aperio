@@ -1,8 +1,8 @@
 """
-udsi.bases
-~~~~~~~~~~
+aperio.bases
+~~~~~~~~~~~~
 
-This module implements UDSI model classes.
+This module implements Aperio model classes.
 """
 
 import base64
@@ -10,8 +10,9 @@ import dataclasses
 
 
 @dataclasses.dataclass
-class UDSIFile:
-    """ Implements the core UDSIFile object. """
+class AperioFile:
+    """ Implements the core AperioFile object. """
+
     id: str
     name: str
 
@@ -23,6 +24,6 @@ class UDSIFile:
 
     def export(self):
         """ Exports data to original file. """
-        with open(self.name, 'wb+') as f:
+        with open(self.name, "wb+") as f:
             dec = base64.b64decode(self.data)
             f.write(dec)
