@@ -5,16 +5,9 @@ tests.test_client
 This module implements the unit tests for the `client` module.
 """
 
-import os
 import json
-import asyncio
-
-from aperio.client import Client
-from aperio.utils import build
 
 from tests.utils import async_test, make_client, make_file, cleanup
-
-from google.oauth2.service_account import Credentials
 
 
 class TestClient:

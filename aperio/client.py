@@ -83,18 +83,13 @@ class Client(object):
             body = {"values": [array]}
 
             try:
-                r = (
-                    self.sheets.spreadsheets()
-                    .values()
-                    .update(
-                        spreadsheetId=sheet_id,
-                        range=range,
-                        valueInputOption="USER_ENTERED",
-                        body=body,
-                    )
-                    .execute()
-                )
-            except HttpError as e:
+                self.sheets.spreadsheets().values().update(
+                    spreadsheetId=sheet_id,
+                    range=range,
+                    valueInputOption="USER_ENTERED",
+                    body=body,
+                ).execute()
+            except HttpError:
                 print("Failed to upload array, cooling and retrying...")
                 time.sleep(10)
                 i -= 1
@@ -156,4 +151,4 @@ class Client(object):
 
         :param id: a valid file ID.
         """
-        r = self.drive.files().delete(fileId=id).execute()
+        self.drive.files().delete(fileId=id).execute()

@@ -46,7 +46,9 @@ def rebuild(sheet: dict, data: dict) -> AperioFile:
         data = "".join([data, block])
 
     file = AperioFile(
-        id=sheet.get("spreadsheetId"), name=properties.get("title")[5:], data=data
+        id=sheet.get("spreadsheetId"),
+        name=properties.get("title")[7:],
+        data=data,
     )
 
     return file
