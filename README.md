@@ -1,8 +1,10 @@
-# UDSI - Unlimited Drive Storage Improved
+# Aperio - Unlimited Storage
 
-[![Build Status](https://travis-ci.com/rlygud/udsi.svg?branch=master)](https://travis-ci.com/rlygud/udsi) <img alt="GitHub" src="https://img.shields.io/github/license/rlygud/udsi.svg">
+[![Build Status](https://travis-ci.com/rlygud/aperio.svg?branch=master)](https://travis-ci.com/rlygud/aperio) <img alt="GitHub" src="https://img.shields.io/github/license/rlygud/aperio.svg">
 
-UDSI is a UDS client that is cleaner, faster, and more efficient than any existing client.
+Aperio is a UDS (Unlimited Drive Storage) client that is cleaner, faster, and more efficient than any existing client.
+
+*Aperio is a derivation of the Greek word "aperióristos", meaning "unlimited".*
 
 ### Logic
 
@@ -20,26 +22,26 @@ UDSI is a UDS client that is cleaner, faster, and more efficient than any existi
 
 **Coming down:**
 - Rows are pulled sequentially from the top of the sheet and recombined.
-- Data is put in a UDSIFile object, from which it can be exported to its original state.
+- Data is put in a AperioFile object, from which it can be exported to its original state.
 
 ## Quickstart
 
-First, install UDSI with `pip`.
+First, install Aperio with `pip`.
 
-    pip install udsi
+    pip install aperio
 
-As of version 0.1.0, UDSI is completely headless, so usage is in the context of Python. Also note: all of these examples are assuming you've already instantiated an authenticated Client object.
+As of version 0.1.0, Aperio is completely headless, so usage is in the context of Python. Also note: all of these examples are assuming you've already instantiated an authenticated Client object.
 
 **Uploading a file:**
 
-    from udsi.utils import build
+    from aperio.utils import build
 
     file = build('path/to/file')
     r = await client.upload(file)
 
 **Retrieving, rebuilding, and exporting a file:**
 
-    from udsi.utils import rebuild
+    from aperio.utils import rebuild
 
     response, data = await client.get('file id')
     file = rebuild(response, data)

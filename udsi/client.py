@@ -1,19 +1,16 @@
 """
-udsi.client
-~~~~~~~~~~~
+aperio.client
+~~~~~~~~~~~~~
 
 This module implements the client for the Google API.
 """
 
 import time
-import string
-import asyncio
 from textwrap import wrap
 
-from .models import UDSIFile
+from .models import AperioFile
 
 from google.oauth2.service_account import Credentials
-from google.auth.transport.requests import AuthorizedSession
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -31,8 +28,8 @@ class Client(object):
         self.root = self._setup_root()
 
     def _setup_root(self):
-        """ Gets or creates the root UDSI folder. """
-        q = 'name = "udsi-root-folder"'
+        """ Gets or creates the root Aperio folder. """
+        q = 'name = "aperio-root-folder"'
         r = self.drive.files().list(q=q, fields=("files(id, name)")).execute()
 
         files = r.get("files", [])
@@ -41,14 +38,14 @@ class Client(object):
         return root
 
     def create_folder(self, name: str, parents: list = None) -> dict:
-        """ Create a folder for a UDSI filedump.
+        """ Create a folder for a Aperio filedump.
 
         :param name: the name of the folder.
         :param parents: (optional) a list of parent directories under which
                         the given file should be stored.
         """
         body = {
-            "name": f"udsi-{name}-folder",
+            "name": f"aperio-{name}-folder",
             "mimeType": "application/vnd.google-apps.folder",
             "parents": parents,
         }
@@ -56,17 +53,17 @@ class Client(object):
 
         return r
 
-    async def upload(self, file: UDSIFile, **kwargs) -> dict:
-        """ Uploads a UDSI file.
+    async def upload(self, file: AperioFile, **kwargs) -> dict:
+        """ Uploads a Aperio file.
 
         A spreadsheet and folder are created, data is chunked,
         and pushed row-by-row to that sheet.
 
-        :param file: a complete UDSIFile object.
+        :param file: a complete AperioFile object.
 
         :return sheet: a dict representing the new sheet.
         """
-        body = {"properties": {"title": f"udsi-{file.name}"}}
+        body = {"properties": {"title": f"aperio-{file.name}"}}
         sheet = self.sheets.spreadsheets().create(body=body).execute()
         sheet_id = sheet.get("spreadsheetId")
 
@@ -108,7 +105,7 @@ class Client(object):
         return sheet
 
     async def get(self, id: str) -> (dict, dict):
-        """ Gets a UDSI file.
+        """ Gets a Aperio file.
 
         :param id: a valid file ID.
 
@@ -129,14 +126,14 @@ class Client(object):
         return sheet, data
 
     async def list(self, folder: str = None) -> list:
-        """ Lists all UDSI files in a UDSI directory.
+        """ Lists all Aperio files in a Aperio directory.
 
         :param folder: (optional) the ID of the folder from which
                        files should be fetched.
 
         :return files: a dict containing metadata and a list of files.
         """
-        q = 'name contains "udsi-"'
+        q = 'name contains "aperio-"'
         if folder:
             qa = f"parents in {repr(folder)}"
             q = " and ".join([q, qa])
@@ -155,7 +152,7 @@ class Client(object):
         return files
 
     async def delete(self, id: str):
-        """ Deletes a UDSI file.
+        """ Deletes a Aperio file.
 
         :param id: a valid file ID.
         """

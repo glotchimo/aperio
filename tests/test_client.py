@@ -9,8 +9,8 @@ import os
 import json
 import asyncio
 
-from udsi.client import Client
-from udsi.utils import build
+from aperio.client import Client
+from aperio.utils import build
 
 from tests.utils import async_test, make_client, make_file, cleanup
 
@@ -24,7 +24,7 @@ class TestClient:
     async def test_init(self):
         client = make_client()
 
-        assert "udsi-root-folder" in json.dumps(client.root)
+        assert "aperio-root-folder" in json.dumps(client.root)
 
     @async_test
     async def test_upload(self):
