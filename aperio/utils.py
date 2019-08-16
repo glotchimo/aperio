@@ -1,34 +1,33 @@
 """
-udsi.utils
-~~~~~~~~~~
+aperio.utils
+~~~~~~~~~~~~
 
-This module implements the core utility methods used in UDSI.
+This module implements the core utility methods used in Aperio.
 """
 
-import sys
 import base64
 
-from .models import UDSIFile
+from .models import AperioFile
 
 
-def build(name: str, **kwargs) -> UDSIFile:
-    """ Builds a UDSIFile object from a file.
+def build(name: str, **kwargs) -> AperioFile:
+    """ Builds a AperioFile object from a file.
 
     :param name: the name/path of an accessible file.
 
-    :return file: a new UDSIFile object.
+    :return file: a new AperioFile object.
     """
     with open(name, "rb") as f:
         raw = f.read()
         enc = base64.b64encode(raw).decode()
 
-    file = UDSIFile(id="", name=name, data=enc)
+    file = AperioFile(id="", name=name, data=enc)
 
     return file
 
 
-def rebuild(sheet: dict, data: dict) -> UDSIFile:
-    """ Rebuilds a UDSIFile object from an API response.
+def rebuild(sheet: dict, data: dict) -> AperioFile:
+    """ Rebuilds a AperioFile object from an API response.
 
     Data sent to `rebuild` must be dictionary responses
     from the `get_file` method.
@@ -36,7 +35,7 @@ def rebuild(sheet: dict, data: dict) -> UDSIFile:
     :param sheet: a dict of sheet metadata.
     :param data: a dict of sheet contents.
 
-    :return file: a new UDSIFile object.
+    :return file: a new AperioFile object.
     """
     properties = sheet.get("properties")
 
@@ -46,8 +45,10 @@ def rebuild(sheet: dict, data: dict) -> UDSIFile:
         block = "".join(array)
         data = "".join([data, block])
 
-    file = UDSIFile(
-        id=sheet.get("spreadsheetId"), name=properties.get("title")[5:], data=data
+    file = AperioFile(
+        id=sheet.get("spreadsheetId"),
+        name=properties.get("title")[7:],
+        data=data,
     )
 
     return file

@@ -7,8 +7,8 @@ This module implements the unit tests for the `utils` module.
 
 import os
 
-from udsi.utils import build, rebuild
-from udsi.models import UDSIFile
+from aperio.utils import build, rebuild
+from aperio.models import AperioFile
 
 from tests.utils import async_test, make_client, make_file, cleanup
 
@@ -23,7 +23,7 @@ class TestUtils:
 
         file = build("temp")
 
-        assert type(file) is UDSIFile
+        assert type(file) is AperioFile
         assert file.name == "temp"
 
         os.remove("temp")
@@ -36,7 +36,7 @@ class TestUtils:
 
         built = rebuild(sheet, data)
 
-        assert type(built) is UDSIFile
+        assert type(built) is AperioFile
         assert built.name == "temp"
 
         await cleanup(client, r.get("spreadsheetId"))

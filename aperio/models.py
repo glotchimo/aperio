@@ -1,8 +1,8 @@
 """
-udsi.bases
-~~~~~~~~~~
+aperio.bases
+~~~~~~~~~~~~
 
-This module implements UDSI model classes.
+This module implements Aperio model classes.
 """
 
 import base64
@@ -10,8 +10,8 @@ import dataclasses
 
 
 @dataclasses.dataclass
-class UDSIFile:
-    """ Implements the core UDSIFile object. """
+class AperioFile:
+    """ Implements the core AperioFile object. """
 
     id: str
     name: str

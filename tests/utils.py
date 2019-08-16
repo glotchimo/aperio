@@ -9,8 +9,8 @@ import os
 import json
 import asyncio
 
-from udsi.client import Client
-from udsi.utils import build
+from aperio.client import Client
+from aperio.utils import build
 
 from google.oauth2.service_account import Credentials
 

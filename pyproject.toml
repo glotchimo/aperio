@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "udsi"
+name = "aperio"
 version = "0.1.1"
-description = "Unlimited Drive Storage Improved"
+description = "Unlimited Storage"
 authors = ["elliott-maguire <me@elliott-m.com>"]
 
 [tool.poetry.dependencies]
@@ -15,6 +15,10 @@ pytest = "^3.0"
 pylint = "^2.2"
 black = "^19.3b0"
 rope = "^0.14.0"
+
+[tool.black]
+line-length = 79
+include = '\.pyx?$'
 
 [build-system]
 requires = ["poetry>=0.12"]
